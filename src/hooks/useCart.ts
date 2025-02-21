@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react"
     //El state de react es asincrono //STATE ES INMUTABLE
 import { db } from "../data/db"
-import type { CartItem } from '../types'
+import type { Guitar, CartItem } from '../types'
 
 export const useCart = () => {
 
@@ -22,7 +22,7 @@ export const useCart = () => {
         localStorage.setItem('cart', JSON.stringify(cart))
       }, [cart]) //Cada que cart cambie realiza el codigo anterior
     
-      function addToCart(item){
+      function addToCart(item : Guitar){
         const itemExists = cart.findIndex(guitar => guitar.id === item.id)
         if(itemExists >= 0){ //Existe en el carrito
           if(cart[itemExists].quantity >= MAX_ITEMS) return
@@ -31,17 +31,17 @@ export const useCart = () => {
           setCart(updatedCart)//Sin modificar state original porque estamos tomando copia
     
         } else{ //Seteamos el carrito de compras y lo colocamos en nuestro state
-          item.quantity= 1
-          setCart([...cart, item]) //La funcion setCart sabe lo que hay en el state, toma una copia del state y escribe el nuevo elemento State
+          const newItem : CartItem = {...item, quantity: 1}
+          setCart([...cart, newItem]) //La funcion setCart sabe lo que hay en el state, toma una copia del state y escribe el nuevo elemento State
         }
       }
     
-      function removeFromCart(id){
+      function removeFromCart(id : Guitar['id']){
         setCart(prevCart => prevCart.filter(guitar => guitar.id !== id))//Nos permite acceder al arreglo y tenemos acceso a array method
         //Accedemos a cada guitar individualmente => filtra las guitarras cuyo Id sea diferente al que paso - returna un nuevo arreglo y lo setea en nuestra funct
       }
     
-      function increaseQuantity(id){
+      function increaseQuantity(id : Guitar['id']){
         const updatedCart = cart.map( item =>  { //Map inmuta el arreglo y state original y retorna una nueva copia
           if(item.id === id && item.quantity < MAX_ITEMS){
             return{
@@ -54,7 +54,7 @@ export const useCart = () => {
         setCart(updatedCart) //Seteamos para que no se quede en memoria
       }
     
-      function decrementQuantity(id){
+      function decrementQuantity(id : Guitar['id']){
         const updatedCart= cart.map( item =>  {
           if(item.id === id && item.quantity > MIN_ITEMS){
             return{ ...item,
