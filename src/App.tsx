@@ -1,34 +1,33 @@
+import { useReducer, useEffect } from "react"
 import Guitar from "./components/Guitar"
 import Header from "./components/Header"
-import { useCart } from "./hooks/useCart"
+import { cartReducer, initialState } from "./reducers/cart-reducers"
 
 function App() {
-  
-  const { data, cart, addToCart, removeFromCart, decrementQuantity,increaseQuantity,
-    clearCart, isEmpty, cartTotal } = useCart()
+
+  const [state, dispatch] = useReducer(cartReducer, initialState)
+
+  useEffect(() => { //Va sincronizar - Use Effect para los efectos secundarios cuando nuestro state cambia
+      localStorage.setItem('cart', JSON.stringify(state.cart))
+  }, [state.cart]) //Cada que cart cambie realiza el codigo anterior
 
   return (
     <>
     <Header
-      cart={cart}
-      removeFromCart={removeFromCart}
-      increaseQuantity={increaseQuantity}
-      decrementQuantity={decrementQuantity}
-      clearCart={clearCart}
-      isEmpty={isEmpty}
-      cartTotal={cartTotal}
+      cart={state.cart}
+      dispatch={dispatch}
     />
 
     <main className="container-xl mt-5">
         <h2 className="text-center">Nuestra Colección</h2>
 
         <div className="row mt-5">
-            {data.map((guitar) => ( //Accedemos a data (state), utilizamos un array method (map) y el arreglo que nos retornaa lo nombramos guitar
+            {state.data.map((guitar) => ( //Accedemos a data (state), utilizamos un array method (map) y el arreglo que nos retorna lo nombramos guitar
               <Guitar //Iteramos y generamos un componente Guitar por cada elemento en ese arreglo
-              key={guitar.id} // Prop especial que siempre debemos utilizar cuando iteremos una lista y le pasamos un valor único
-              guitar={guitar}
-              // setCart={setCart}//Prop=Funcion
-              addToCart={addToCart}//Cada componente va tener la funcionalidad de agg ese elemento al carrito
+                key={guitar.id} // Prop especial que siempre debemos utilizar cuando iteremos una lista y le pasamos un valor único
+                guitar={guitar}
+                dispacth={dispatch}
+                // setCart={setCart}//Prop=Funcion
               />
             ))}
         </div>
